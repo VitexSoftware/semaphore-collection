@@ -2,7 +2,7 @@
 <!-- Add CI and code coverage badges here. Samples included below. -->
 [![CI](https://github.com/ansible-collections/REPONAMEHERE/workflows/CI/badge.svg?event=push)](https://github.com/ansible-collections/REPONAMEHERE/actions) [![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/REPONAMEHERE)](https://codecov.io/gh/ansible-collections/REPONAMEHERE)
 
-<!-- Describe the collection and why a user would want to use it. What does the collection do? -->
+Handle your [Semaphore](https://www.ansible-semaphore.com/) using [Ansible](https://www.ansible.com/) 
 
 ## Code of Conduct
 
@@ -62,18 +62,18 @@ Every voice is important. If you have something on your mind, create an issue or
 
 ## External requirements
 
-<!-- List any external resources the collection depends on, for example minimum versions of an OS, libraries, or utilities. Do not list other Ansible collections here. -->
-
-### Supported connections
-<!-- Optional. If your collection supports only specific connection types (such as HTTPAPI, netconf, or others), list them here. -->
+Collection is based on [ansible-semaphore-client](https://pypi.org/project/ansible-semaphore-client/) library 
+generated from [OpenAPI Definition](https://www.ansible-semaphore.com/api-docs/)
 
 ## Included content
 
-<!-- Galaxy will eventually list the module docs within the UI, but until that is ready, you may need to either describe your plugins etc here, or point to an external docsite to cover that information. -->
+* Semaphore related Ansibnle Modules
 
 ## Using this collection
 
-<!--Include some quick examples that cover the most common use cases for your collection content. It can include the following examples of installation and upgrade (change community.semaphore-api correspondingly):-->
+```ansible
+
+```
 
 ### Installing the Collection from Ansible Galaxy
 
