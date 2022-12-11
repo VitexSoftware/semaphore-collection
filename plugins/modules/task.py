@@ -1,20 +1,28 @@
 #!/usr/bin/python
 
-import os
-import time
-import semaphore_client
-from pprint import pprint
-from semaphore import project_api
-from semaphore_client.model.project_project_id_tasks_get_request import ProjectProjectIdTasksGetRequest
-from semaphore_client.model.task import Task
-
-
 # Copyright: (c) 2022, Vítězslav Dvořák <vitex@vitexsoftware.com>
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+
 from __future__ import (absolute_import, division, print_function)
+
+import os
+import time
+
+from ansible.module_utils.basic import AnsibleModule
+
+import semaphore_client
+
+from pprint import pprint
+from semaphore_client.model.task import Task
+from semaphore_client.semaphore import project_api
+from semaphore_client.model.project_project_id_tasks_get_request import ProjectProjectIdTasksGetRequest
+
+
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1', 'status': ['preview'], 'supported_by': 'community'}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'], 'supported_by': 'community'}
 
 DOCUMENTATION = r'''
 ---
@@ -85,28 +93,21 @@ message:
     sample: 'goodbye'
 '''
 
-from ansible.module_utils.basic import AnsibleModule
-
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
         project_id=dict(type='int', required=True),
-        debug=dict(type='str', required=True, default=False),
+        debug=dict(type='bool', default=False),
         template_id=dict(type='int', required=True),
-        dry_run=dict(type='str', required=True, default=True),
+        dry_run=dict(type='bool', default=True),
         playbook=dict(type='str', required=True),
         environment=dict(type='str', required=True),
-        semaphore_uri=dict(type='str', required=True, default=os.environ('SEMAPHORE_URI')),
-        semaphore_token=dict(type='str', required=True, default=os.environ('SEMAPHORE_TOKEN'), no_log=True),
-        template_id=dict(type='int', required=True)
+        semaphore_uri=dict(type='str', default=os.environ.get('SEMAPHORE_URI')),
+        semaphore_token=dict(type='str', default=os.environ.get(
+            'SEMAPHORE_TOKEN'), no_log=True)
     )
 
-    # seed the result dict in the object
-    # we primarily care about changed and state
-    # changed is if this module effectively modified the target
-    # state will include any data that you want your module to pass back
-    # for consumption, for example, in a subsequent task
     result = dict(
         changed=False,
         original_message='',
@@ -143,30 +144,30 @@ def run_module():
             dry_run=module.params['dry_run'],
             playbook=module.params['playbook'],
             environment=module.params['environment'],
-        ) # ProjectProjectIdTasksGetRequest | 
+        )  # ProjectProjectIdTasksGetRequest |
 
         # example passing only required values which don't have defaults set
         try:
             # Starts a job
-            api_response = api_instance.project_project_id_tasks_post( module.params['project_id'], task)
+            api_response = api_instance.project_project_id_tasks_post(
+                module.params['project_id'], task)
             pprint(api_response)
             result['message'] = api_response
         except semaphore_client.ApiException as e:
-            module.fail_json(msg='Exception when calling ProjectApi->project_project_id_tasks_post:', **e)
+            fail = dict(reason=e.reason, status=e.status)
+            module.fail_json(
+                msg='Exception when calling ProjectApi->project_project_id_tasks_post:', **fail)
 
     # result['original_message'] = module.params['name']
 
     result['changed'] = True
 
-    # during the execution of the module, if there is an exception or a
-    # conditional state that effectively causes a failure, run
-    # AnsibleModule.fail_json() to pass in the message and the result
-    if module.params['name'] == 'fail me':
-
-    # in the event of a successful module execution, you will want to
-    # simple AnsibleModule.exit_json(), passing the key/value results
     module.exit_json(**result)
 
 
 def main():
     run_module()
+
+
+if __name__ == '__main__':
+    main()

@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 """Create an API token."""
 
 from __future__ import (absolute_import, division, print_function)
