@@ -1,19 +1,31 @@
 #!/usr/bin/python
 
-import os
-import time
-import semaphore_client
-from pprint import pprint
-from semaphore import default_api
-from semaphore_client.model.info_type import InfoType
+"""Obtain Semaphore info."""
 
-
-# Copyright: (c) 2022, Vítězslav Dvořák <vitex@vitexsoftware.com>
-# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 from __future__ import (absolute_import, division, print_function)
+
+import os
+
+from ansible.module_utils.basic import AnsibleModule
+
+
+import semaphore_client
+
+
+from semaphore_client.model.info_type import InfoType
+from semaphore_client.semaphore import default_api
+
+
+'''
+Copyright: (c) 2022, Vítězslav Dvořák <vitex@vitexsoftware.com>
+GNU General Public License v3.0+ 
+(see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+'''
+
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1', 'status': ['preview'], 'supported_by': 'community'}
+ANSIBLE_METADATA = {'metadata_version': '1.1',
+                    'status': ['preview'], 'supported_by': 'community'}
 
 DOCUMENTATION = r'''
 ---
@@ -38,7 +50,7 @@ options:
 # Specify this value according to your collection
 # in format of namespace.collection.doc_fragment_name
 extends_documentation_fragment:
-    - vitexsoftware.semaphore-api.my_doc_fragment_name
+    - vitexsoftware.semaphore.my_doc_fragment_name
 
 author:
     - Vítězslav Dvořák (@Vitexus)
@@ -47,7 +59,9 @@ author:
 EXAMPLES = r'''
 # Pass in a message
 - name: Test with a message
-  vitexsoftware.semaphore-api.info:
+  vitexsoftware.semaphore.info:
+    semaphore_uri: https://demo.ansible-semaphore.com/api
+    semaphore_token: vku6sucjo96pkymjwzzfakqpo2gkij5svvfb_ynipuw=
 '''
 
 RETURN = r'''
@@ -58,13 +72,15 @@ message:
     sample: 'goodbye'
 '''
 
-from ansible.module_utils.basic import AnsibleModule
-
 
 def run_module():
+    """Obtain Semaphore Info."""
     module_args = dict(
-        semaphore_uri=dict(type='str', required=True, default=os.environ('SEMAPHORE_URI')),
-        semaphore_token=dict(type='str', required=True, default=os.environ('SEMAPHORE_TOKEN'), no_log=True),
+        semaphore_uri=dict(type='str', required=True,
+                           default=os.environ.get('SEMAPHORE_URI')),
+        semaphore_token=dict(type='str', required=True,
+                             default=os.environ.get('SEMAPHORE_TOKEN'),
+                             no_log=True),
     )
 
     result = dict(
@@ -87,16 +103,20 @@ def run_module():
         api_instance = default_api.DefaultApi(api_client)
         try:
             api_response = api_instance.info_get()
-            pprint(api_response)
+
             result['message'] = api_response
         except semaphore_client.ApiException as e:
             module.fail_json(msg="Exception when calling DefaultApi->info_get: ", **e)
-        
+
     result['changed'] = False
 
     module.exit_json(**result)
 
 
 def main():
+    """Do Module Info."""
     run_module()
-        
+
+
+if __name__ == '__main__':
+    main()

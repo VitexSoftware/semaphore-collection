@@ -1,22 +1,19 @@
 #!/usr/bin/python
 
-# Copyright: (c) 2022, Vítězslav Dvořák <vitex@vitexsoftware.com>
-# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
-
-
 from __future__ import (absolute_import, division, print_function)
 
 import os
-import time
 
 from ansible.module_utils.basic import AnsibleModule
 
 import semaphore_client
 
-from pprint import pprint
 from semaphore_client.model.task import Task
 from semaphore_client.semaphore import project_api
 from semaphore_client.model.project_project_id_tasks_get_request import ProjectProjectIdTasksGetRequest
+
+# Copyright: (c) 2022, Vítězslav Dvořák <vitex@vitexsoftware.com>
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 
 __metaclass__ = type
@@ -95,7 +92,7 @@ message:
 
 
 def run_module():
-    # define available arguments/parameters a user can pass to the module
+    """Run Module main function."""
     module_args = dict(
         project_id=dict(type='int', required=True),
         debug=dict(type='bool', default=False),
@@ -103,7 +100,8 @@ def run_module():
         dry_run=dict(type='bool', default=True),
         playbook=dict(type='str', required=True),
         environment=dict(type='str', required=True),
-        semaphore_uri=dict(type='str', default=os.environ.get('SEMAPHORE_URI')),
+        semaphore_uri=dict(type='str',
+                           default=os.environ.get('SEMAPHORE_URI')),
         semaphore_token=dict(type='str', default=os.environ.get(
             'SEMAPHORE_TOKEN'), no_log=True)
     )
@@ -114,18 +112,11 @@ def run_module():
         message=''
     )
 
-    # the AnsibleModule object will be our abstraction working with Ansible
-    # this includes instantiation, a couple of common attr would be the
-    # args/params passed to the execution, as well as if the module
-    # supports check mode
     module = AnsibleModule(
         argument_spec=module_args,
         supports_check_mode=True
     )
 
-    # if the user is working with this module in only check mode we do not
-    # want to make any changes to the environment, just return the current
-    # state with no modifications
     if module.check_mode:
         module.exit_json(**result)
 
@@ -135,7 +126,6 @@ def run_module():
     configuration.api_key['bearer'] = module.params['semaphore_token']
 
     with semaphore_client.ApiClient(configuration) as api_client:
-        # Create an instance of the API class
         api_instance = project_api.ProjectApi(api_client)
 
         task = ProjectProjectIdTasksGetRequest(
@@ -146,12 +136,11 @@ def run_module():
             environment=module.params['environment'],
         )  # ProjectProjectIdTasksGetRequest |
 
-        # example passing only required values which don't have defaults set
         try:
             # Starts a job
             api_response = api_instance.project_project_id_tasks_post(
                 module.params['project_id'], task)
-            pprint(api_response)
+
             result['message'] = api_response
         except semaphore_client.ApiException as e:
             fail = dict(reason=e.reason, status=e.status)
@@ -166,6 +155,7 @@ def run_module():
 
 
 def main():
+    """Run module from here."""
     run_module()
 
 
